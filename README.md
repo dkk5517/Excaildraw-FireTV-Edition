@@ -1,3 +1,113 @@
+# 📺 Excalidraw — Fire TV Edition
+
+> **A fork of [Excalidraw](https://github.com/excalidraw/excalidraw) adapted for Amazon Fire TV remotes.**  
+> Draw, sketch, and whiteboard entirely with your Fire TV D-pad — no mouse or keyboard needed.
+
+[![Forked from Excalidraw](https://img.shields.io/badge/forked%20from-excalidraw%2Fexcalidraw-blue?logo=github)](https://github.com/excalidraw/excalidraw)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+---
+
+## 🔥 What's New in This Fork
+
+This fork adds a `FireTVController` layer on top of Excalidraw that translates Fire TV remote button presses into pointer/keyboard events, giving you full drawing capability with just the D-pad remote.
+
+### ✨ Fire TV Features
+
+| Feature | Details |
+|---|---|
+| **Virtual cursor** | Blue crosshair follows D-pad movement; turns red while drawing |
+| **D-pad movement** | Arrow keys move the cursor smoothly with acceleration (hold = faster) |
+| **Click / Place** | OK (Select) button = left click |
+| **Undo** | Short-press **Back** = Ctrl+Z |
+| **Help overlay** | Hold **Back** for 0.6 s → full control reference screen |
+| **Tool cycling** | **Rewind ⏪** / **Fast Forward ⏩** step through all tools |
+| **Tool ring** | **Menu ☰** opens a visual tool picker overlay |
+| **Select All** | **Play/Pause ⏯** when already on the Selection tool = Ctrl+A |
+| **Mode switch** | **Play/Pause ⏯** on any other tool = switch to Selection |
+| **✏️ Pencil auto-draw** | In Freedraw mode, just move the D-pad — the pen is always down. No OK press needed to start a stroke |
+| **Lift pen** | In Freedraw mode, OK ends the current stroke and starts a fresh one |
+| **Input field bypass** | Keyboard events pass through normally when a text input is focused |
+
+### 🎮 Full Remote Control Map
+
+| Button | Action |
+|---|---|
+| ⬆ ⬇ ⬅ ➡ D-pad | Move virtual cursor |
+| OK / Select | Click — place shape, confirm, select element |
+| OK (in ✏️ Pencil) | Lift pen · start new stroke |
+| Back (short press) | Undo |
+| Back (hold 0.6 s) | Open Help overlay |
+| ⏪ Rewind | Previous tool |
+| ⏩ Fast Forward | Next tool |
+| ☰ Menu | Open tool ring picker |
+| ⏯ Play/Pause | Select All (if on Selection) · otherwise switch to Selection |
+
+### 🛠️ Tools Available
+
+| # | Tool | Notes |
+|---|---|---|
+| 1 | 👆 Selection | Click, drag to multi-select, Play/Pause = Select All |
+| 2 | ⬜ Rectangle | OK starts, D-pad sizes, OK confirms |
+| 3 | ◇ Diamond | Same as Rectangle |
+| 4 | ⭕ Ellipse | Same as Rectangle |
+| 5 | ➡️ Arrow | OK starts, D-pad draws the line, OK places end |
+| 6 | ⁄ Line | Same as Arrow |
+| 7 | ✏️ Freedraw | Move D-pad to draw continuously |
+| 8 | T Text | OK places text box |
+| 9 | 🧹 Eraser | Move over elements, OK to erase |
+
+---
+
+## 🚀 Setup & Running
+
+```bash
+# Install dependencies
+yarn
+
+# Start dev server (accessible on your local network for TV testing)
+yarn start:app --host
+
+# Build for production
+yarn build:app
+```
+
+**Testing on a real Fire TV:**
+1. Run `yarn start:app --host` — note your machine's local IP (e.g. `192.168.1.x`)
+2. On the Fire TV, open Silk Browser and navigate to `http://<your-ip>:3001`
+3. Fire TV is auto-detected via the Silk user-agent string
+4. To force Fire TV mode in a desktop browser, add `?firetv=1` to the URL
+
+---
+
+## 🔧 Implementation Details
+
+New files added in `excalidraw-app/firetv/`:
+
+- **`FireTVController.tsx`** — Main controller component (~1,014 lines). Wraps Excalidraw, captures `keydown`/`keyup` at window capture phase, dispatches synthetic `PointerEvent`s to the canvas, renders virtual cursor, ToolHUD, ToolRing, and HelpOverlay.
+- **`detect.ts`** — Fire TV detection utility. Checks `navigator.userAgent` for `Silk/`, `AFT*`, `KFFOWI` strings plus `?firetv=1` dev override.
+- **`index.ts`** — Barrel exports.
+
+`excalidraw-app/App.tsx` is modified to conditionally wrap Excalidraw in `<FireTVController>` when Fire TV is detected.
+
+---
+
+## 📜 Credits & Attribution
+
+This project is a fork of **[Excalidraw](https://github.com/excalidraw/excalidraw)** — an amazing open-source virtual whiteboard by [@excalidraw](https://github.com/excalidraw) and contributors.
+
+All original Excalidraw code, MIT license, and contributor work is preserved and unmodified except for:
+- `excalidraw-app/App.tsx` — minor wrapper addition
+- `excalidraw-app/firetv/` — new directory (all new code)
+
+> **Original project:** https://github.com/excalidraw/excalidraw  
+> **Original license:** MIT  
+> **Original authors:** Excalidraw contributors — see [CONTRIBUTORS.md](https://github.com/excalidraw/excalidraw/graphs/contributors)
+
+---
+
+## 📄 Original Excalidraw README
+
 <a href="https://excalidraw.com/" target="_blank" rel="noopener">
   <picture>
     <source media="(prefers-color-scheme: dark)" alt="Excalidraw" srcset="https://excalidraw.nyc3.cdn.digitaloceanspaces.com/github/excalidraw_github_cover_2_dark.png" />
