@@ -34,7 +34,7 @@ import {
   isDevEnv,
 } from "@excalidraw/common";
 import polyfill from "@excalidraw/excalidraw/polyfill";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadFromBlob } from "@excalidraw/excalidraw/data/blob";
 import { t } from "@excalidraw/excalidraw/i18n";
 
@@ -81,6 +81,7 @@ import type { ResolutionType } from "@excalidraw/common/utility-types";
 import type { ResolvablePromise } from "@excalidraw/common/utils";
 
 import CustomStats from "./CustomStats";
+import { FireTVController, isFireTV } from "./firetv";
 import {
   Provider,
   useAtom,
@@ -373,6 +374,7 @@ const initializeScene = async (opts: {
 
 const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
+  const fireTVMode = useMemo(() => isFireTV(), []);
 
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();
@@ -901,13 +903,7 @@ const ExcalidrawWrapper = () => {
     },
   };
 
-  return (
-    <div
-      style={{ height: "100%" }}
-      className={clsx("excalidraw-app", {
-        "is-collaborating": isCollaborating,
-      })}
-    >
+  const excalidrawContent = (
       <Excalidraw
         onChange={onChange}
         onExport={onExport}
@@ -1262,6 +1258,22 @@ const ExcalidrawWrapper = () => {
           />
         )}
       </Excalidraw>
+  );
+
+  return (
+    <div
+      style={{ height: "100%" }}
+      className={clsx("excalidraw-app", {
+        "is-collaborating": isCollaborating,
+      })}
+    >
+      {fireTVMode ? (
+        <FireTVController excalidrawAPI={excalidrawAPI}>
+          {excalidrawContent}
+        </FireTVController>
+      ) : (
+        excalidrawContent
+      )}
     </div>
   );
 };
